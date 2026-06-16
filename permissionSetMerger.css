@@ -1,0 +1,287 @@
+/* ── Step Indicator ─────────────────────────────────────────────────────── */
+.step-indicator {
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.step-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex: 0 0 auto;
+}
+
+.step-active {
+    background: #0176d3;
+    color: #fff;
+}
+
+.step-done {
+    background: #2e844a;
+    color: #fff;
+}
+
+.step-pending {
+    background: #f3f3f3;
+    color: #888;
+}
+
+.step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.step-pending .step-num {
+    background: #ddd;
+    color: #666;
+}
+
+.step-divider {
+    color: #ccc;
+    font-size: 0.9rem;
+    flex: 0 0 auto;
+    padding: 0 0.25rem;
+}
+
+/* ── Step Content ─────────────────────────────────────────────────────────── */
+.step-content {
+    min-height: 300px;
+}
+
+/* ── Dual List Box ───────────────────────────────────────────────────────── */
+.list-box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #f3f3f3;
+    border: 1px solid #dddbda;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.list-box {
+    border: 1px solid #dddbda;
+    border-radius: 0 0 4px 4px;
+    min-height: 220px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: #fff;
+    cursor: pointer;
+}
+
+.ps-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.1s;
+    user-select: none;
+}
+
+.ps-item:hover {
+    background: #f0f7ff;
+}
+
+.ps-item-highlighted {
+    background: #d8edff !important;
+    border-left: 3px solid #0176d3;
+}
+
+.ps-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #181818;
+}
+
+.ps-name {
+    font-size: 0.75rem;
+    color: #777;
+    font-family: monospace;
+}
+
+.empty-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 180px;
+    color: #aaa;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.list-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+.badge-ready {
+    background: #2e844a;
+    color: #fff;
+}
+
+.badge-warning {
+    background: #fe9339;
+    color: #fff;
+}
+
+/* ── Step Nav ────────────────────────────────────────────────────────────── */
+.step-nav {
+    display: flex;
+    align-items: center;
+    margin-top: 1.25rem;
+}
+
+/* ── Selected Summary ────────────────────────────────────────────────────── */
+.selected-summary {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+}
+
+/* ── Review Box ──────────────────────────────────────────────────────────── */
+.review-box {
+    background: #f8f8f8;
+    border: 1px solid #dddbda;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+}
+
+.review-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+    align-items: flex-start;
+}
+
+.review-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 100px;
+    font-size: 0.85rem;
+}
+
+.review-value {
+    color: #181818;
+    font-size: 0.875rem;
+}
+
+.merge-ps-item {
+    margin-bottom: 0.2rem;
+    font-size: 0.85rem;
+}
+
+.api-name-small {
+    color: #888;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+/* ── Warning Box ─────────────────────────────────────────────────────────── */
+.warning-box {
+    background: #fff8ed;
+    border: 1px solid #fe9339;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+}
+
+.warning-box ul {
+    margin: 0.4rem 0 0 1.25rem;
+    padding: 0;
+}
+
+.warning-box li {
+    margin-bottom: 0.2rem;
+    color: #444;
+}
+
+/* ── Merging Spinner ─────────────────────────────────────────────────────── */
+.merging-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    text-align: center;
+}
+
+/* ── Result Section ──────────────────────────────────────────────────────── */
+.result-header {
+    display: flex;
+    align-items: center;
+    background: #effbe9;
+    border: 1px solid #2e844a;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+}
+
+.result-section {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.result-section-title {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.success-title { background: #effbe9; color: #2e844a; }
+.warning-title { background: #fff8ed; color: #a8640c; }
+.manual-title  { background: #f3f3f3; color: #555; }
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.85rem;
+}
+
+.result-item-success { background: #fafff8; }
+.result-item-warning { background: #fffbf5; }
+.result-item-manual  { background: #fafafa; }
+
+.result-section-name {
+    font-weight: 500;
+    color: #222;
+}
+
+.result-detail {
+    color: #777;
+    font-size: 0.8rem;
+    text-align: right;
+    max-width: 55%;
+}
+
+/* ── Error Box ───────────────────────────────────────────────────────────── */
+.error-box {
+    background: #fce8e8;
+    border: 1px solid #c23934;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    color: #c23934;
+    font-size: 0.875rem;
+}

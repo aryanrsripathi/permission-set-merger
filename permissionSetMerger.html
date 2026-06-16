@@ -1,0 +1,348 @@
+<template>
+    <lightning-card title="Permission Set Merger" icon-name="utility:shield">
+        <div class="slds-p-around_medium">
+
+            <!-- ── STEP INDICATOR ─────────────────────────────────────── -->
+            <div class="slds-grid slds-gutters slds-m-bottom_large step-indicator">
+                <div class={step1Class}>
+                    <span class="step-num">1</span>
+                    <span class="step-label">Select Permission Sets</span>
+                </div>
+                <div class="slds-col step-divider">▶</div>
+                <div class={step2Class}>
+                    <span class="step-num">2</span>
+                    <span class="step-label">Name New Set</span>
+                </div>
+                <div class="slds-col step-divider">▶</div>
+                <div class={step3Class}>
+                    <span class="step-num">3</span>
+                    <span class="step-label">Review & Merge</span>
+                </div>
+            </div>
+
+            <!-- ── STEP 1: SELECT PERMISSION SETS ────────────────────── -->
+            <template if:true={isStep1}>
+                <div class="step-content">
+                    <p class="slds-text-body_regular slds-m-bottom_medium">
+                        Select <strong>2 or more</strong> permission sets to merge into one.
+                    </p>
+
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    </template>
+
+                    <template if:false={isLoading}>
+                        <!-- Search filter -->
+                        <lightning-input
+                            type="search"
+                            label="Filter permission sets"
+                            placeholder="Type to filter..."
+                            value={filterText}
+                            onchange={handleFilter}
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+
+                        <!-- Available list -->
+                        <div class="slds-grid slds-gutters">
+                            <!-- Available -->
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="list-box-header">
+                                    <span>Available Permission Sets</span>
+                                    <span class="slds-badge">{availableCount}</span>
+                                </div>
+                                <div class="list-box" onclick={handleAvailableClick}>
+                                    <template for:each={filteredAvailable} for:item="ps">
+                                        <div
+                                            key={ps.id}
+                                            data-id={ps.id}
+                                            class={ps.cssClass}
+                                            title={ps.description}>
+                                            <span class="ps-label">{ps.label}</span>
+                                            <span class="ps-name">{ps.name}</span>
+                                        </div>
+                                    </template>
+                                    <template if:true={noAvailable}>
+                                        <div class="empty-list">No permission sets available</div>
+                                    </template>
+                                </div>
+                                <div class="list-actions">
+                                    <lightning-button
+                                        label="Add Selected →"
+                                        onclick={handleAddSelected}
+                                        disabled={noAvailableHighlighted}>
+                                    </lightning-button>
+                                    <lightning-button
+                                        label="Add All →"
+                                        onclick={handleAddAll}
+                                        disabled={noAvailable}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+
+                            <!-- Selected -->
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="list-box-header">
+                                    <span>Selected to Merge</span>
+                                    <span class={selectedBadgeClass}>{selectedCount}</span>
+                                </div>
+                                <div class="list-box" onclick={handleSelectedClick}>
+                                    <template for:each={selectedPermSetsDisplay} for:item="ps">
+                                        <div
+                                            key={ps.id}
+                                            data-id={ps.id}
+                                            class={ps.selectedCssClass}
+                                            title={ps.description}>
+                                            <span class="ps-label">{ps.label}</span>
+                                            <span class="ps-name">{ps.name}</span>
+                                        </div>
+                                    </template>
+                                    <template if:true={noSelected}>
+                                        <div class="empty-list">No permission sets selected yet</div>
+                                    </template>
+                                </div>
+                                <div class="list-actions">
+                                    <lightning-button
+                                        label="← Remove Selected"
+                                        onclick={handleRemoveSelected}
+                                        disabled={noSelectedHighlighted}>
+                                    </lightning-button>
+                                    <lightning-button
+                                        label="← Remove All"
+                                        onclick={handleRemoveAll}
+                                        disabled={noSelected}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-m-top_medium step-nav">
+                            <lightning-button
+                                label="Next: Name Your Permission Set"
+                                variant="brand"
+                                onclick={goToStep2}
+                                disabled={cannotProceedStep1}>
+                            </lightning-button>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ── STEP 2: NAME THE NEW PERMISSION SET ────────────────── -->
+            <template if:true={isStep2}>
+                <div class="step-content">
+                    <p class="slds-text-body_regular slds-m-bottom_medium">
+                        Give your new merged permission set a name.
+                    </p>
+
+                    <!-- Selected summary -->
+                    <div class="selected-summary slds-m-bottom_medium">
+                        <p class="slds-text-title_caps slds-m-bottom_x-small">Merging:</p>
+                        <template for:each={selectedPermSetsDisplay} for:item="ps">
+                            <lightning-badge key={ps.id} label={ps.label} class="slds-m-right_x-small"></lightning-badge>
+                        </template>
+                    </div>
+
+                    <lightning-input
+                        label="Permission Set Label"
+                        value={newLabel}
+                        placeholder="e.g. Sales Full Access"
+                        onchange={handleLabelChange}
+                        required
+                        class="slds-m-bottom_small">
+                    </lightning-input>
+
+                    <lightning-input
+                        label="API Name"
+                        value={newApiName}
+                        placeholder="e.g. Sales_Full_Access"
+                        onchange={handleApiNameChange}
+                        required
+                        pattern="[a-zA-Z][a-zA-Z0-9_]*"
+                        message-when-pattern-mismatch="Must start with a letter. Only letters, numbers and underscores allowed."
+                        class="slds-m-bottom_small">
+                    </lightning-input>
+
+                    <lightning-textarea
+                        label="Description (optional)"
+                        value={newDescription}
+                        placeholder="Describe what this merged permission set is for..."
+                        onchange={handleDescriptionChange}
+                        max-length="255"
+                        class="slds-m-bottom_medium">
+                    </lightning-textarea>
+
+                    <div class="step-nav">
+                        <lightning-button
+                            label="← Back"
+                            onclick={goToStep1}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <lightning-button
+                            label="Next: Review & Merge"
+                            variant="brand"
+                            onclick={goToStep3}
+                            disabled={cannotProceedStep2}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ── STEP 3: REVIEW & CONFIRM ───────────────────────────── -->
+            <template if:true={isStep3}>
+                <div class="step-content">
+                    <template if:false={isMerging}>
+                        <!-- Pre-merge review -->
+                        <template if:false={mergeComplete}>
+                            <div class="review-box slds-m-bottom_medium">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">Review Before Merging</h3>
+
+                                <div class="review-row">
+                                    <span class="review-label">New Label:</span>
+                                    <span class="review-value">{newLabel}</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">API Name:</span>
+                                    <span class="review-value">{newApiName}</span>
+                                </div>
+                                <template if:true={newDescription}>
+                                    <div class="review-row">
+                                        <span class="review-label">Description:</span>
+                                        <span class="review-value">{newDescription}</span>
+                                    </div>
+                                </template>
+                                <div class="review-row">
+                                    <span class="review-label">Merging:</span>
+                                    <div class="review-value">
+                                        <template for:each={selectedPermSetsDisplay} for:item="ps">
+                                            <div key={ps.id} class="merge-ps-item">
+                                                ✓ {ps.label} <span class="api-name-small">({ps.name})</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="warning-box slds-m-bottom_medium">
+                                <p>⚠️ <strong>These 3 items require manual setup after merge:</strong></p>
+                                <ul>
+                                    <li>Standard Invocable Action Type Access</li>
+                                    <li>Org-Wide Email Address Access</li>
+                                    <li>Email-to-Case Routing Address Access</li>
+                                </ul>
+                            </div>
+
+                            <div class="step-nav">
+                                <lightning-button
+                                    label="← Back"
+                                    onclick={goToStep2}
+                                    class="slds-m-right_small">
+                                </lightning-button>
+                                <lightning-button
+                                    label="Merge Permission Sets"
+                                    variant="brand"
+                                    icon-name="utility:merge"
+                                    onclick={handleMerge}>
+                                </lightning-button>
+                            </div>
+                        </template>
+
+                        <!-- Post-merge results -->
+                        <template if:true={mergeComplete}>
+                            <div class="result-header slds-m-bottom_medium">
+                                <lightning-icon icon-name="utility:success" size="medium" class="slds-m-right_small"></lightning-icon>
+                                <div>
+                                    <h3 class="slds-text-heading_small">Merge Complete!</h3>
+                                    <p>New Permission Set ID: <strong>{mergeResult.newPermissionSetId}</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- Successes -->
+                            <template if:true={hasSuccesses}>
+                                <div class="result-section">
+                                    <h4 class="slds-text-title_caps result-section-title success-title">
+                                        ✅ Successfully Merged
+                                    </h4>
+                                    <template for:each={mergeResult.successes} for:item="item">
+                                        <div key={item.section} class="result-item result-item-success">
+                                            <span class="result-section-name">{item.section}</span>
+                                            <span class="result-detail">{item.detail}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Warnings -->
+                            <template if:true={hasWarnings}>
+                                <div class="result-section slds-m-top_small">
+                                    <h4 class="slds-text-title_caps result-section-title warning-title">
+                                        ⚠️ Warnings (partial failures)
+                                    </h4>
+                                    <template for:each={mergeResult.warnings} for:item="item">
+                                        <div key={item.section} class="result-item result-item-warning">
+                                            <span class="result-section-name">{item.section}</span>
+                                            <span class="result-detail">{item.detail}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Manual items -->
+                            <template if:true={hasManualItems}>
+                                <div class="result-section slds-m-top_small">
+                                    <h4 class="slds-text-title_caps result-section-title manual-title">
+                                        🔧 Requires Manual Setup
+                                    </h4>
+                                    <template for:each={mergeResult.manualItems} for:item="item">
+                                        <div key={item.section} class="result-item result-item-manual">
+                                            <span class="result-section-name">{item.section}</span>
+                                            <span class="result-detail">{item.detail}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <div class="step-nav slds-m-top_medium">
+                                <lightning-button
+                                    label="Merge Another"
+                                    variant="brand"
+                                    onclick={handleReset}>
+                                </lightning-button>
+                                <a href={newPSSetupUrl} target="_blank" class="slds-m-left_small">
+                                    <lightning-button
+                                        label="Open in Setup →"
+                                        variant="neutral"
+                                        icon-name="utility:new_window">
+                                    </lightning-button>
+                                </a>
+                            </div>
+                        </template>
+                    </template>
+
+                    <!-- Merging spinner with polling status -->
+                    <template if:true={isMerging}>
+                        <div class="merging-state">
+                            <lightning-spinner alternative-text="Merging..." size="large"></lightning-spinner>
+                            <p class="slds-m-top_large slds-text-heading_small">
+                                Merging permission sets...
+                            </p>
+                            <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                                {pollingStatus}
+                            </p>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                Large merges (6+ permission sets) may take 15–30 seconds.
+                            </p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ── ERROR TOAST AREA ──────────────────────────────────── -->
+            <template if:true={errorMessage}>
+                <div class="error-box slds-m-top_medium">
+                    ❌ {errorMessage}
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
